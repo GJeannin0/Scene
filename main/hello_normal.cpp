@@ -155,11 +155,11 @@ namespace gl {
 		std::string path = "../";
 
 		texture_diffuse_ = std::make_unique<Texture>(
-			path + "data/textures/brickwall.jpg");
+			path + "data/textures/brickwall.jpg",1);
 		texture_specular_ = std::make_unique<Texture>(
-			path + "data/textures/brickwall.jpg");
+			path + "data/textures/brickwall.jpg",2);
 		texture_normal_ = std::make_unique<Texture>(
-			path + "data/textures/brickwall_normal.jpg");
+			path + "data/textures/brickwall_normal.jpg",3);
 		
 		
 		shaders_ = std::make_unique<Shader>(

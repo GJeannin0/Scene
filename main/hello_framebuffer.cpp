@@ -185,9 +185,9 @@ namespace gl {
 		std::string path = "../";
 
 		texture_diffuse_ = std::make_unique<Texture>(
-			path + "data/textures/texture_diffuse.jpg");
+			path + "data/textures/texture_diffuse.jpg",1);
 		texture_floor_ = std::make_unique<Texture>(
-			path + "data/textures/WoodFloor043_1K_Color.jpg");
+			path + "data/textures/WoodFloor043_1K_Color.jpg",2);
 
 		//unsigned int cubeTexture = loadTexture(FileSystem::getPath("resources/textures/texture_diffuse.jpg").c_str());
 		//unsigned int floorTexture = loadTexture(FileSystem::getPath("resources/textures/WoodFloor043_1K_Color.jpg").c_str());

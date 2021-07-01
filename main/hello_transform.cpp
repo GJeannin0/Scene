@@ -151,7 +151,7 @@ namespace gl {
 		std::string path = "../";
 
 		texture_diffuse_ = std::make_unique<Texture>(
-			path + "data/textures/texture_diffuse.jpg");
+			path + "data/textures/texture_diffuse.jpg",1);
 		
 		shaders_ = std::make_unique<Shader>(
 			path + "data/shaders/hello_transform/transform.vert",

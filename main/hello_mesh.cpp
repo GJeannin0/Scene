@@ -33,7 +33,6 @@ namespace gl {
 		void IsError(const std::string& file, int line) const;
 		void SetUniformMatrix() const;
 
-	protected:
 		unsigned int vertex_shader_;
 		unsigned int fragment_shader_;
 		unsigned int program_;
@@ -76,9 +75,9 @@ namespace gl {
 
 		mesh_ = std::make_unique<Mesh>(path + "data/meshes/Apple.obj");
 		texture_diffuse_ = std::make_unique<Texture>(
-			path + "data/textures/Color.jpg");
+			path + "data/textures/Color.jpg",1);
 		texture_specular_ = std::make_unique<Texture>(
-			path + "data/textures/Roughness.jpg");
+			path + "data/textures/Roughness.jpg",2);
 		
 		shaders_ = std::make_unique<Shader>(
 			path + "data/shaders/hello_mesh/mesh.vert",
