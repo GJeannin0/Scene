@@ -80,7 +80,7 @@ namespace gl {
     void MyScene::Update(seconds dt)
     {
         time_ += dt.count();
-        glClearColor(0.8f, 0.6f, 0.1f, 1.0f);       
+        glClearColor(0.3f, 0.3f, 0.1f, 1.0f);       
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);       
 
         view_ = camera_->GetViewMatrix();
