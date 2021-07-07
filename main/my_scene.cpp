@@ -25,6 +25,7 @@ namespace gl {
     protected:    	
         Model model;
         Shader shader_;
+        float time_ = 0.0f;
     	
         unsigned int VBO_;
         unsigned int VAO_[2];
@@ -38,7 +39,7 @@ namespace gl {
         glm::mat4 model_ = glm::mat4(1.0f);
         glm::mat4 view_ = glm::mat4(1.0f);
         glm::mat4 projection_ = glm::mat4(1.0f);
-
+        glm::mat4 inv_model_ = glm::mat4(1.0f);
 
 
     	
@@ -78,6 +79,7 @@ namespace gl {
 
     void MyScene::Update(seconds dt)
     {
+        time_ += dt.count();
         glClearColor(0.8f, 0.6f, 0.1f, 1.0f);       
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);       
 
@@ -87,11 +89,15 @@ namespace gl {
 			glm::radians(45.0f), 
 			4.0f / 3.0f, 
 			0.1f, 
-			100.f); 	
+			100.f);
+    	
+        model_ = glm::rotate(glm::mat4(1.0f), time_, glm::vec3(0.f, 1.f, 0.f));
+    	
         shader_.SetMat4("model", model_);
         shader_.SetMat4("view", view_);
         shader_.SetMat4("projection", projection_);
-
+        shader_.SetMat4("invModel", inv_model_);
+        shader_.SetVec3("cameraPosition", camera_->position);
     	
         model.DrawModel(shader_);
     }
@@ -107,9 +113,7 @@ namespace gl {
         }
     }
 
-    void MyScene::DrawImGui()
-    {
-    }
+    void MyScene::DrawImGui(){}
 
 } // End namespace gl.
 
