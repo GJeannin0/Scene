@@ -96,6 +96,8 @@ namespace gl {
         model.DrawModel(shader_);
     }
 
+    void MyScene::Destroy(){}
+
     void MyScene::OnEvent(SDL_Event& event)
     {
         if ((event.type == SDL_KEYDOWN) &&
