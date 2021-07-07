@@ -72,80 +72,14 @@ namespace gl {
             path + "data/shaders/model/model.frag");
 
         shader_ = Shader(ifs_verts, ifs_frags);
+        shader_.Use();
 
-
-
-    	
-        std::ifstream ifs_vert(
-            path + "data\\shaders\\model\\model.vert");
-        std::ifstream ifs_frag(
-            path + "data\\shaders\\model\\model.frag");
-    	
-        if (!ifs_vert.is_open())
-        {
-            throw std::runtime_error("Could not open vertex file.");
-        }
-        if (!ifs_frag.is_open())
-        {
-            throw std::runtime_error("Could not open fragment file.");
-        }
-
-        std::string vertex_source{ std::istreambuf_iterator<char>(ifs_vert), {} };
-        std::string fragment_source{ std::istreambuf_iterator<char>(ifs_frag), {} };
-
-        // Vertex shader.
-        vertex_shader_ = glCreateShader(GL_VERTEX_SHADER);       
-        const char* ptr1 = vertex_source.c_str();
-        glShaderSource(vertex_shader_, 1, &ptr1, 0);
-        glCompileShader(vertex_shader_);
-        GLint status = 0;
-        glGetShaderiv(vertex_shader_, GL_COMPILE_STATUS, &status);
-        if (status == GL_FALSE) {
-            GLint infoLogLength;
-            glGetShaderiv(vertex_shader_, GL_INFO_LOG_LENGTH, &infoLogLength);
-            GLchar* infoLog = new GLchar[infoLogLength];
-            glGetShaderInfoLog(vertex_shader_, infoLogLength, NULL, infoLog);
-            std::cerr << "VS> could not compile: " << infoLog << "\n";
-            delete[] infoLog;
-            exit(0);
-        }
-
-        // Fragment shader.
-        fragment_shader_ = glCreateShader(GL_FRAGMENT_SHADER);
-        
-        const char* ptr2 = fragment_source.c_str();
-        glShaderSource(fragment_shader_, 1, &ptr2, 0);
-        
-        glCompileShader(fragment_shader_);
-        glGetShaderiv(vertex_shader_, GL_COMPILE_STATUS, &status);
-        if (status == GL_FALSE) {
-            GLint infoLogLength;
-            glGetShaderiv(vertex_shader_, GL_INFO_LOG_LENGTH, &infoLogLength);
-            GLchar* infoLog = new GLchar[infoLogLength];
-            glGetShaderInfoLog(vertex_shader_, infoLogLength, NULL, infoLog);
-            std::cerr << "FS> could not compile: " << infoLog << "\n";
-            delete[] infoLog;
-            exit(0);
-        }
-
-        // Program.
-        program_ = glCreateProgram();
-        
-        glAttachShader(program_, vertex_shader_);
-        
-        glAttachShader(program_, fragment_shader_);
-        
-        
-        glLinkProgram(program_);
-        
-        assert(program_ != 0);
     }
 
     void MyScene::Update(seconds dt)
     {
         glClearColor(0.8f, 0.6f, 0.1f, 1.0f);       
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);       
-        glUseProgram(program_);
 
         view_ = camera_->GetViewMatrix();
 
@@ -160,13 +94,6 @@ namespace gl {
 
     	
         model.DrawModel(shader_);
-    }
-
-    void MyScene::Destroy()
-    {
-        glDeleteProgram(program_);
-        glDeleteShader(vertex_shader_);
-        glDeleteShader(fragment_shader_);
     }
 
     void MyScene::OnEvent(SDL_Event& event)
