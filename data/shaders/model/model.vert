@@ -3,8 +3,7 @@
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec2 aTexCoords;
 layout (location = 2) in vec3 aNormal;
-layout (location = 3) in vec3 aTangent;
-layout (location = 4) in vec3 aBitangent;  
+layout (location = 3) in vec3 aTangent; 
 
 out vec3 outPosition;
 out vec2 outTexCoords;
@@ -21,7 +20,7 @@ uniform vec3 lightPosition;
 
 void main()
 {
-    outPosition = (view * model * vec4(aPos, 1.0)).xyz;
+    outPosition = (model * vec4(aPos, 1.0)).xyz;
     outTexCoords = aTexCoords;
 
 
@@ -30,7 +29,7 @@ void main()
     vec3 N = normalize(normalMatrix * aNormal);
     T = normalize(T -dot(T,N)*N);
     vec3 B = normalize(cross(N,T));
-    
+
     mat3 TBN = transpose(mat3(T,B,N));
 
     outTangentCamera = TBN * cameraPosition;

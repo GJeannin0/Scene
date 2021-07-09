@@ -25,6 +25,7 @@ namespace gl {
     protected:    	
         Model model;
         Shader shader_;
+        Shader skyShader_;
         float time_ = 0.0f;
     	
         unsigned int VBO_;
@@ -33,6 +34,12 @@ namespace gl {
         unsigned int vertex_shader_;
         unsigned int fragment_shader_;
         unsigned int program_;
+
+        unsigned int cubemapTexture_;
+        unsigned int skyboxVAO_;
+
+
+    	
 
         std::unique_ptr<Camera> camera_ = nullptr;
     	
@@ -61,11 +68,88 @@ namespace gl {
 
     void MyScene::Init()
     {
-        glEnable(GL_DEPTH_TEST);
-        camera_ = std::make_unique<Camera>(glm::vec3(.0f, 8.0f, 20.0f));
-        model.LoadModel("data/meshes/nanosuit.obj");
+        //Init skybox
 
+        float skyboxVertices[] = {
+            // positions          
+            -1.0f,  1.0f, -1.0f,
+            -1.0f, -1.0f, -1.0f,
+             1.0f, -1.0f, -1.0f,
+             1.0f, -1.0f, -1.0f,
+             1.0f,  1.0f, -1.0f,
+            -1.0f,  1.0f, -1.0f,
+
+            -1.0f, -1.0f,  1.0f,
+            -1.0f, -1.0f, -1.0f,
+            -1.0f,  1.0f, -1.0f,
+            -1.0f,  1.0f, -1.0f,
+            -1.0f,  1.0f,  1.0f,
+            -1.0f, -1.0f,  1.0f,
+
+             1.0f, -1.0f, -1.0f,
+             1.0f, -1.0f,  1.0f,
+             1.0f,  1.0f,  1.0f,
+             1.0f,  1.0f,  1.0f,
+             1.0f,  1.0f, -1.0f,
+             1.0f, -1.0f, -1.0f,
+
+            -1.0f, -1.0f,  1.0f,
+            -1.0f,  1.0f,  1.0f,
+             1.0f,  1.0f,  1.0f,
+             1.0f,  1.0f,  1.0f,
+             1.0f, -1.0f,  1.0f,
+            -1.0f, -1.0f,  1.0f,
+
+            -1.0f,  1.0f, -1.0f,
+             1.0f,  1.0f, -1.0f,
+             1.0f,  1.0f,  1.0f,
+             1.0f,  1.0f,  1.0f,
+            -1.0f,  1.0f,  1.0f,
+            -1.0f,  1.0f, -1.0f,
+
+            -1.0f, -1.0f, -1.0f,
+            -1.0f, -1.0f,  1.0f,
+             1.0f, -1.0f, -1.0f,
+             1.0f, -1.0f, -1.0f,
+            -1.0f, -1.0f,  1.0f,
+             1.0f, -1.0f,  1.0f
+        };
+
+
+        unsigned int skyboxVBO;
+        glGenVertexArrays(1, &skyboxVAO_);
+        glGenBuffers(1, &skyboxVBO);
+        glBindVertexArray(skyboxVAO_);
+        glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    	
         std::string path = "..\\";
+    	
+        std::vector<std::string> faces
+        {
+            path + "data/textures/skybox/right.jpg",
+            path + "data/textures/skybox/left.jpg",
+            path + "data/textures/skybox/top.jpg",
+            path + "data/textures/skybox/bottom.jpg",
+            path + "data/textures/skybox/front.jpg",
+            path + "data/textures/skybox/back.jpg"
+        };
+        Texture skybox;
+        cubemapTexture_ = skybox.LoadCubemap(faces);
+    	
+    	//Inited skybox
+
+
+
+    	
+        glEnable(GL_DEPTH_TEST);
+        camera_ = std::make_unique<Camera>(glm::vec3(.0f, 10.0f, 20.0f));
+        model.LoadModel("data/meshes/nanosuit.obj");
+        //model.LoadModel("data/meshes/susan.OBJ");
+
+        
 
         std::string ifs_verts(
             path + "data/shaders/model/model.vert");
@@ -75,6 +159,14 @@ namespace gl {
         shader_ = Shader(ifs_verts, ifs_frags);
         shader_.Use();
 
+        ifs_verts = (
+            path + "data/shaders/cubemap/cubemap.vert");
+        ifs_frags = (
+            path + "data/shaders/cubemap/cubemap.frag");
+
+        skyShader_ = Shader(ifs_verts, ifs_frags);
+        skyShader_.Use();
+    	
     }
 
     void MyScene::Update(seconds dt)
@@ -95,15 +187,31 @@ namespace gl {
 
         glm::vec3 offset (0.0, 15.0, 0.0);
 
-    	inv_model_ = glm::transpose(glm::inverse(model_)); 	
+    	inv_model_ = glm::transpose(glm::inverse(model_));
+        shader_.Use();    	
         shader_.SetMat4("model", model_);
         shader_.SetMat4("view", view_);
         shader_.SetMat4("projection", projection_);
         shader_.SetMat4("invModel", inv_model_);
         shader_.SetVec3("cameraPosition", camera_->position);
-        shader_.SetVec3("lightPosition", camera_->position+offset);
+        shader_.SetVec3("lightPosition", camera_->position);
     	
         model.DrawModel(shader_);
+    	
+    	// Draw skybox
+        glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
+        skyShader_.Use();
+        view_ = glm::mat4(glm::mat3(camera_->GetViewMatrix())); // remove translation from the view matrix
+        skyShader_.SetMat4("view", view_);
+        skyShader_.SetMat4("projection", projection_);
+        // skybox cube
+        glBindVertexArray(skyboxVAO_);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture_);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+        glBindVertexArray(0);
+        glDepthFunc(GL_LESS);
+    	
     }
 
     void MyScene::Destroy(){}
