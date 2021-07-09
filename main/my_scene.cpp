@@ -80,7 +80,7 @@ namespace gl {
     void MyScene::Update(seconds dt)
     {
         time_ += dt.count();
-        glClearColor(0.3f, 0.3f, 0.1f, 1.0f);       
+        glClearColor(0.5f, 0.4f, 0.3f, 1.0f);       
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);       
 
         view_ = camera_->GetViewMatrix();
@@ -92,12 +92,16 @@ namespace gl {
 			100.f);
     	
         model_ = glm::rotate(glm::mat4(1.0f), time_, glm::vec3(0.f, 1.f, 0.f));
-    	
+
+        glm::vec3 offset (0.0, 15.0, 0.0);
+
+    	inv_model_ = glm::transpose(glm::inverse(model_)); 	
         shader_.SetMat4("model", model_);
         shader_.SetMat4("view", view_);
         shader_.SetMat4("projection", projection_);
         shader_.SetMat4("invModel", inv_model_);
         shader_.SetVec3("cameraPosition", camera_->position);
+        shader_.SetVec3("lightPosition", camera_->position+offset);
     	
         model.DrawModel(shader_);
     }
