@@ -25,6 +25,8 @@ void main()
 
 
     mat3 normalMatrix = mat3(invModel);
+
+
     vec3 T = normalize(normalMatrix * aTangent);
     vec3 N = normalize(normalMatrix * aNormal);
     T = normalize(T -dot(T,N)*N);

@@ -10,6 +10,8 @@
 #include "../build/model.h"
 #include "camera.h"
 
+#include <random>
+
 
 namespace gl {
 
@@ -24,8 +26,16 @@ namespace gl {
 
     protected:    	
         Model model;
+        Model rockModel_;
         Shader shader_;
         Shader skyShader_;
+        Shader instanceShader_;
+
+        unsigned int amount = 10;
+        
+        std::vector<glm::mat4> modelMatrices_;
+        float offset = 2.5f;
+    	
         float time_ = 0.0f;
     	
         unsigned int VBO_;
@@ -38,8 +48,8 @@ namespace gl {
         unsigned int cubemapTexture_;
         unsigned int skyboxVAO_;
 
-
-    	
+        unsigned int instanceVBO_ = 0;
+        const size_t offsetInstances = 4;
 
         std::unique_ptr<Camera> camera_ = nullptr;
     	
@@ -68,6 +78,24 @@ namespace gl {
 
     void MyScene::Init()
     {
+        //Instancing
+
+		
+        for (unsigned int i = 0; i < amount; i++)
+        {
+            for (unsigned int  j= 0; j < amount; j++)
+            {
+                glm::mat4 model = glm::mat4(1.0f);
+                // 1. translation: displace on axis
+                model = glm::translate(model, glm::vec3(i * 10, 0.0f, j*(-10.0f)));
+                // 4. now add to list of matrices
+                modelMatrices_.push_back(model);
+            }
+        }
+        
+
+        
+    	
         //Init skybox
 
         float skyboxVertices[] = {
@@ -145,10 +173,10 @@ namespace gl {
 
     	
         glEnable(GL_DEPTH_TEST);
-        camera_ = std::make_unique<Camera>(glm::vec3(.0f, 10.0f, 20.0f));
+        camera_ = std::make_unique<Camera>(glm::vec3(.0f, 10.0f, 50.0f));
         model.LoadModel("data/meshes/nanosuit.obj");
         //model.LoadModel("data/meshes/susan.OBJ");
-
+        //rockModel_.LoadModel("data/meshes/rock.obj");
         
 
         std::string ifs_verts(
@@ -166,6 +194,14 @@ namespace gl {
 
         skyShader_ = Shader(ifs_verts, ifs_frags);
         skyShader_.Use();
+
+        ifs_verts = (
+            path + "data/shaders/instancing/instancing.vert");
+        ifs_frags = (
+            path + "data/shaders/instancing/instancing.frag");
+
+        instanceShader_ = Shader(ifs_verts, ifs_frags);
+        instanceShader_.Use();
     	
     }
 
@@ -175,6 +211,8 @@ namespace gl {
         glClearColor(0.5f, 0.4f, 0.3f, 1.0f);       
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);       
 
+        float rotationSpeed = 50.0f;
+        //camera_ = std::make_unique<Camera>(glm::vec3(.0f, 10.0f, 20.0f), glm::vec3(0.0f, 1.0f, 0.0f), time_*rotationSpeed);
         view_ = camera_->GetViewMatrix();
 
 		projection_ = glm::perspective(
@@ -188,15 +226,39 @@ namespace gl {
         glm::vec3 offset (0.0, 15.0, 0.0);
 
     	inv_model_ = glm::transpose(glm::inverse(model_));
-        shader_.Use();    	
-        shader_.SetMat4("model", model_);
-        shader_.SetMat4("view", view_);
-        shader_.SetMat4("projection", projection_);
-        shader_.SetMat4("invModel", inv_model_);
-        shader_.SetVec3("cameraPosition", camera_->position);
-        shader_.SetVec3("lightPosition", camera_->position);
+        instanceShader_.Use();    	
+        //shader_.SetMat4("model", model_);
+        //shader_.SetMat4("view", view_);
+        instanceShader_.SetMat4("cameraMatrix", projection_*view_);
+        //shader_.SetMat4("invModel", inv_model_);
+        instanceShader_.SetVec3("viewPos", camera_->position);
+        //shader_.SetVec3("lightPosition", camera_->position);
     	
-        model.DrawModel(shader_);
+        model.DrawModel(instanceShader_,modelMatrices_,offsetInstances);
+
+        // Instancing
+
+        // draw instancied models
+        
+        //instanceShader_.Use();
+
+        //for (unsigned int i = 0; i < model.GetMeshes().size(); i++)
+        //{
+        //   glBindVertexArray(model.GetMesh(i).GetVao());
+        //    glDrawElementsInstanced(
+        //        GL_TRIANGLES, model.GetMesh(i).GetIndicesCount(), GL_UNSIGNED_INT, 0,amount            );
+        //}
+        
+
+
+
+
+        // reprendre sur learnopengl
+
+    	
+
+        // Instancing
+
     	
     	// Draw skybox
         glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
