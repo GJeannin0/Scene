@@ -5,8 +5,6 @@
 #include <glad/glad.h>
 #include "vector"
 
-
-
 namespace gl {
 
 	class Texture {

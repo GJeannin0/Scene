@@ -14,8 +14,8 @@ namespace gl {
 	{
 	public:
 		unsigned int id;
-		Shader(){}
-		~Shader(){}
+		Shader() {}
+		~Shader() {}
 		// constructor generates the shader on the fly
 		Shader(
 			const std::string& vertexPath,

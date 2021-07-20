@@ -134,10 +134,10 @@ namespace gl {
 			int width, height, nrChannels;
 			// stbi_set_flip_vertically_on_load(true);
 			unsigned char* dataDiffuse = stbi_load(
-				jpg_file.c_str(), 
-				&width, 
-				&height, 
-				&nrChannels, 
+				jpg_file.c_str(),
+				&width,
+				&height,
+				&nrChannels,
 				0);
 			assert(dataDiffuse);
 
@@ -146,24 +146,24 @@ namespace gl {
 			glBindTexture(GL_TEXTURE_2D, texture_diffuse_);
 			IsError(__FILE__, __LINE__);
 			glTexImage2D(
-				GL_TEXTURE_2D, 
-				0, 
-				GL_RGB, 
-				width, 
-				height, 
-				0, 
-				GL_RGB, 
-				GL_UNSIGNED_BYTE, 
+				GL_TEXTURE_2D,
+				0,
+				GL_RGB,
+				width,
+				height,
+				0,
+				GL_RGB,
+				GL_UNSIGNED_BYTE,
 				dataDiffuse);
 			IsError(__FILE__, __LINE__);
 			glTexParameteri(
-				GL_TEXTURE_2D, 
-				GL_TEXTURE_WRAP_S, 
+				GL_TEXTURE_2D,
+				GL_TEXTURE_WRAP_S,
 				GL_MIRRORED_REPEAT);
 			IsError(__FILE__, __LINE__);
 			glTexParameteri(
-				GL_TEXTURE_2D, 
-				GL_TEXTURE_WRAP_T, 
+				GL_TEXTURE_2D,
+				GL_TEXTURE_WRAP_T,
 				GL_MIRRORED_REPEAT);
 			IsError(__FILE__, __LINE__);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -202,13 +202,13 @@ namespace gl {
 				dataSmily);
 			IsError(__FILE__, __LINE__);
 			glTexParameteri(
-				GL_TEXTURE_2D, 
-				GL_TEXTURE_WRAP_S, 
+				GL_TEXTURE_2D,
+				GL_TEXTURE_WRAP_S,
 				GL_MIRRORED_REPEAT);
 			IsError(__FILE__, __LINE__);
 			glTexParameteri(
-				GL_TEXTURE_2D, 
-				GL_TEXTURE_WRAP_T, 
+				GL_TEXTURE_2D,
+				GL_TEXTURE_WRAP_T,
 				GL_MIRRORED_REPEAT);
 			IsError(__FILE__, __LINE__);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -233,11 +233,11 @@ namespace gl {
 			throw std::runtime_error("Could not open fragment file.");
 		}
 
-		std::string vertex_source{ 
-			std::istreambuf_iterator<char>(ifs_vert), 
+		std::string vertex_source{
+			std::istreambuf_iterator<char>(ifs_vert),
 			{} };
-		std::string fragment_source{ 
-			std::istreambuf_iterator<char>(ifs_frag), 
+		std::string fragment_source{
+			std::istreambuf_iterator<char>(ifs_frag),
 			{} };
 
 		// Vertex shader.

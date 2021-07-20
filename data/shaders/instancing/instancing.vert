@@ -14,7 +14,7 @@ out vec3 TangentFragPos;
 uniform mat4 cameraMatrix;
 uniform vec3 viewPos;
 
-const vec3 lightDir = normalize(vec3(-1.0, -1.0, -1.0));
+const vec3 lightDir = normalize(vec3(-1.5, -1.0, -1.0));
 
 void main()
 {
