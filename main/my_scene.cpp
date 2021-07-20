@@ -12,7 +12,6 @@
 
 #include <random>
 
-
 namespace gl {
 
 	class MyScene : public Program
@@ -146,7 +145,7 @@ namespace gl {
 
 		glEnable(GL_DEPTH_TEST);
 		camera_ = std::make_unique<Camera>(glm::vec3(amount * 5, 10.0f, 10.0f));
-		model.LoadModel("data/meshes/nanosuit.obj");
+		model.LoadModel(path + "data/meshes/nanosuit.obj");
 
 		std::string ifs_verts(
 			path + "data/shaders/model/model.vert");
